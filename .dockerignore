@@ -1,0 +1,21 @@
+# Ignorar dependencias locales (se instalarán dentro del contenedor)
+node_modules
+npm-debug.log
+
+# Archivos de entorno (no deben ir al contenedor por seguridad)
+.env
+
+# Logs y caché
+logs
+*.log
+yarn-error.log
+.pnpm-debug.log
+
+# Archivos de control de Git
+.git
+.gitignore
+
+# Directorios del editor de código
+.vscode
+.idea
+.DS_Store

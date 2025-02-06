@@ -1,39 +1,56 @@
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
-const sequelize = require("./config/database"); // Conexión a la base de datos
-const adminRoutes = require("./routes/adminRoutes"); // Rutas de administrador
-const vendedorRoutes = require("./routes/vendedorRoutes"); // Rutas de vendedor
-const empresaRoutes = require("./routes/EmpresaRoutes"); // Rutas de empresas
-const prospectadosRoutes = require("./routes/ProspectadosRoutes"); // Rutas de prospectados
-const carteraRoutes = require("./routes/CarteraRoutes"); // Rutas de cartera
-const usuarioRoutes = require("./routes/UsuarioRoutes"); // Rutas de usuarios
-const registroCargasRoutes = require("./routes/RegistroCargasRoutes"); // Rutas de registro de cargas
+const sequelize = require("./src/config/database");
+
+// Importar rutas
+const adminRoutes = require("./src/routes/AdminRoutes");
+const vendedorRoutes = require("./src/routes/VendedorRoutes");
+const empresaRoutes = require("./src/routes/EmpresaRoutes");
+const prospectadosRoutes = require("./src/routes/ProspectadosRoutes");
+const carteraRoutes = require("./src/routes/CarteraRoutes");
+const usuarioRoutes = require("./src/routes/UsuarioRoutes");
+const registroCargasRoutes = require("./src/routes/RegistroCargasRoutes");
+const consultaRoutes = require("./src/routes/consultaRoutes");
+const reporteRoutes = require("./src/routes/ReporteRoutes");
 
 const app = express();
 
-// Middlewares
-app.use(bodyParser.json()); // Procesar JSON en solicitudes
-app.use(bodyParser.urlencoded({ extended: true })); // Procesar datos en formularios
-app.use(express.json()); // Manejo de datos JSON directamente
+// 🔹 Configurar CORS
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-// Rutas
-app.use("/api/admin", adminRoutes); // Rutas específicas para el administrador
-app.use("/api/vendedor", vendedorRoutes); // Rutas específicas para los vendedores
-app.use("/api/empresa", empresaRoutes); // Rutas para manejar empresas
-app.use("/api/prospectados", prospectadosRoutes); // Rutas para manejar prospectados
-app.use("/api/cartera", carteraRoutes); // Rutas para manejar cartera
-app.use("/api/usuario", usuarioRoutes); // Rutas para manejar usuarios
-app.use("/api/registro-cargas", registroCargasRoutes); // Rutas para registro de cargas
+// 🔹 Middlewares para JSON y formularios
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Sincronizar base de datos y levantar el servidor
-sequelize
-  .sync()
+// 🔹 Registrar Rutas
+app.use("/api/admin", adminRoutes);
+app.use("/api/vendedor", vendedorRoutes);
+app.use("/api/empresa", empresaRoutes);
+app.use("/api/prospectado", prospectadosRoutes);
+app.use("/api/cartera", carteraRoutes);
+app.use("/api/usuario", usuarioRoutes);
+app.use("/api/registro-cargas", registroCargasRoutes);
+app.use("/api/consultas", consultaRoutes);
+app.use("/api/reporte", reporteRoutes);
+
+console.log("✅ Rutas registradas correctamente");
+
+// 🔹 Iniciar servidor y sincronizar base de datos
+sequelize.sync()
   .then(() => {
-    console.log("Base de datos sincronizada.");
-    app.listen(3000, () => {
-      console.log("Servidor ejecutándose en el puerto 3000.");
+    console.log("📌 Base de datos sincronizada.");
+    app.listen(5000, () => {
+      console.log("🚀 Servidor corriendo en http://localhost:5000");
     });
   })
-  .catch((error) => {
-    console.error("Error al sincronizar la base de datos:", error);
+  .catch(error => {
+    console.error("❌ Error al sincronizar la base de datos:", error);
   });
